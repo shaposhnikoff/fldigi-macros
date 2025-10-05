@@ -1,0 +1,304 @@
+//fldigi macro definition file extended
+// Custom macro set for UT3UDX
+// Valid Fldigi format (UTF-8, no BOM)
+// 4x12 button layout for Fldigi macro panel
+// Updated and structured by ChatGPT (2025-10-05)
+// All macros unified under BPSK31 mode
+// Organized according to standard QSO flow
+
+// =======================================================
+// Button Row 1 — CQ / Answering
+// =======================================================
+
+/$ 0 1.1 Calling CQ
+<MODEM:BPSK31>
+<TX>
+<IDLE:0.25>
+CQ CQ CQ de <MYCALL> <MYCALL>
+CQ CQ CQ de <MYCALL> <MYCALL> pse k
+<RX>
+
+ 
+/$ 1 1.2 QRZ?
+<MODEM:BPSK31>
+<TX>
+<IDLE:0.25>
+QRZ? QRZ? de <MYCALL> <MYCALL> kn
+<IDLE:0.25>
+<RX>
+
+ 
+/$ 2 1.3 Calling CQ (Alt)
+<MODEM:BPSK31>
+<TX>
+<IDLE:0.25>
+CQ CQ CQ de <MYCALL> <MYCALL>
+CQ CQ CQ de <MYCALL> <MYCALL> pse k
+<RX>
+
+ 
+/$ 3 2.1 Answer A CQ Call
+<MODEM:BPSK31>
+<TX>
+<RXRSID:off>
+<CALL> de <MYCALL> name is <MYNAME> <MYRST> <INFO1> btu <CALL> de <MYCALL> kn
+<RX>
+
+ 
+/$ 4 2.2 Answer A CQ
+<MODEM:BPSK31>
+<TX>
+<RXRSID:off>
+*** <CALL> <CALL> *** de <MYCALL>
+Hello, my name is <MYNAME>, it's nice to make contact with you.
+How do I copy?
+btu <CALL> de <MYCALL> kn
+<RX>
+
+ 
+/$ 5 2.3 CQ Answered
+<MODEM:BPSK31>
+<TX>
+<RXRSID:off>
+*** <CALL> <CALL> *** de <MYCALL>
+Thank you for answering my call
+My name is <MYNAME>
+How do I copy?
+btu <CALL> de <MYCALL> kn
+<RX>
+
+ 
+/$ 6 3.1 Report 599
+<MODEM:BPSK31>
+<CLRTX>
+<CLRRX>
+Report 599
+
+ 
+/$ 7 3.2 Report And Details
+<MODEM:BPSK31>
+<CALL> de <MYCALL>
+Hello <NAME>, details as follows:
+RST: <MYRST>
+Name: <MYNAME>
+QTH: <MYQTH>
+Loc: <MYLOC>
+btu <NAME> <CALL> de <MYCALL> kn
+<RX>
+
+ 
+/$ 8 3.3 Name & QTH
+<MODEM:BPSK31>
+I am <MYNAME> from Kiev/Ukraine
+<MYCALL> / <MYNAME> <MYRST> <INFO1> kn
+www.qrz.com/db/<MYCALL>
+
+ 
+/$ 9 3.4 Exchange
+<MODEM:BPSK31>
+<TX>
+<CALL> EXCH
+<RX>
+
+ 
+/$ 10 3.5 Exchange Again
+<MODEM:BPSK31>
+<TX>
+<CALL> de <MYCALL> Exchange Exchange pse
+<RX>
+
+ 
+/$ 11 3.6 QSL
+<MODEM:BPSK31>
+<TX>
+<CALL> QSL QSL de <MYCALL>
+<RX>
+
+
+// =======================================================
+// Button Row 2 — Exchange & Info
+// =======================================================
+
+/$ 12 4.1 Me / QTH
+<MODEM:BPSK31>
+I am <MYNAME> from Kiev
+Operator : Created 1976, licenced 2010
+www.qrz.com/db/<MYCALL>
+
+ 
+/$ 13 4.2 Station Info
+<MODEM:BPSK31>
+<CALL> de <MYCALL>
+<NAME>, my station setup:
+Radio: Yaesu FT-891
+Power: 10–20 Watt (typical)
+Antenna: <ANTENNA> as Inverted-V (MFJ-1778), 10 m height
+Computer: Raspberry Pi 4 running Linux Ubuntu <VER>
+Software: Fldigi + fllog
+Operating System: <EXEC>/bin/lsb_release -d | cut -d ':' -f 2</EXEC>
+QTH: Kiev / Ukraine
+Btu <NAME> <CALL> de <MYCALL> kn
+<RX>
+
+ 
+/$ 14 4.3 My Photo
+<MODEM:BPSK31>
+<TX>
+<IDLE:2>
+<IMAGE:/home/max/UT3UDX.png> pse k
+<RX>
+
+ 
+/$ 15 4.4 Podxs070
+<MODEM:BPSK31>
+My Podxs070 # is: 2569
+
+ 
+/$ 16 4.5 FH Exchange
+<MODEM:BPSK31>
+<TX>
+<CALL> de <MYCALL> 599, NO FH #, CA, CM87vl
+<RX>
+
+ 
+/$ 17 4.6 FH Thanks
+<MODEM:BPSK31>
+<TX>
+<CALL> THX GL de <MYCALL>
+<RX>
+
+ 
+/$ 18 5.1 Thank For The QSO
+<MODEM:BPSK31>
+<NAME>, Thank you for the QSO on <BAND> / <MODE>.
+Have a good DX, good QSOs, good luck, 73.
+QSL: QRZ.com
+<ZDT> <CALL> de <MYCALL> sk
+<EXEC>/usr/local/bin/fllog</EXEC>
+<LOG>
+<RX>
+
+ 
+/$ 19 5.2 Final
+<MODEM:BPSK31>
+<CALL> de <MYCALL>
+<NAME>, thanks for this QSO on <BAND> / <MODE>
+My best wishes to you from <MYQTH>.
+QSL: eQSL and QRZ, thank you. 73, bye bye.
+<ZDT> <CALL> de <MYCALL> sk
+<RX>
+
+ 
+/$ 20 5.3 SK
+<MODEM:BPSK31>
+<CALL> de <MYCALL> sk
+<RX>
+
+ 
+/$ 21 5.4 Log QSO
+<MODEM:BPSK31>
+<INCR>
+<EXEC>/opt/fllog/bin/fllog -d</EXEC>
+<LOG>
+
+ 
+/$ 22 5.5 Log
+<MODEM:BPSK31>
+<INCR>
+<EXEC>/usr/local/bin/fllog -d</EXEC>
+<LOG>
+
+ 
+/$ 23 5.6 Test Log
+<MODEM:BPSK31>
+<EXEC>/usr/local/bin/fllog</EXEC>
+<LOG>
+
+
+// =======================================================
+// Button Row 3 — Station / QSL / Final
+// =======================================================
+
+/$ 24 6.1 Tx
+<MODEM:BPSK31>
+<TX>
+
+ 
+/$ 25 6.2 Rx
+<MODEM:BPSK31>
+<RX>
+
+ 
+/$ 26 6.3 T/R
+<MODEM:BPSK31>
+<TX/RX>
+
+ 
+/$ 27 6.4 Clear
+<MODEM:BPSK31>
+<CLRTX>
+
+ 
+/$ 28 6.5 Clear All
+<MODEM:BPSK31>
+<CLRTX>
+<CLRRX>
+
+ 
+/$ 29 6.6 No QTC
+<MODEM:BPSK31>
+<TX>
+SRY NO QTC <MYCALL>
+<RX>
+
+ 
+/$ 30 6.7 Call / MyCall
+<MODEM:BPSK31>
+<CALL> de <MYCALL>
+
+ 
+/$ 31 6.8 <CALL> De <MYCALL>
+<MODEM:BPSK31>
+<TX>
+<CALL> de <MYCALL> <MYCALL>
+<RX>
+
+ 
+/$ 32 6.9 CW TX
+<MODEM:BPSK31>
+<TX>
+
+ 
+/$ 33 6.10 Dit Dit
+<MODEM:BPSK31>
+<TX>
+dit dit
+<RX>
+
+ 
+/$ 34 (empty)
+ 
+/$ 35 (empty)
+ 
+/$ 36 (empty)
+ 
+/$ 37 (empty)
+ 
+/$ 38 (empty)
+ 
+/$ 39 (empty)
+ 
+/$ 40 (empty)
+ 
+/$ 41 (empty)
+ 
+/$ 42 (empty)
+ 
+/$ 43 (empty)
+ 
+/$ 44 (empty)
+ 
+/$ 45 (empty)
+
+
+
