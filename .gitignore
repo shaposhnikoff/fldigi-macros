@@ -25,7 +25,3 @@ venv/
 ENV/
 env/
 
-# Downloaded archives and extracted directories
-*.tar.gz
-fldigi-*/
-flrig-*/
