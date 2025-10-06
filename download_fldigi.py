@@ -110,7 +110,7 @@ def create_deb_package(source_dir=".", appname="fldigi", version="1.0.0", releas
     
     # Build checkinstall command
     checkinstall_cmd = [
-        "sudo", "checkinstall",
+        "checkinstall",
         f"--pkgname={appname}",
         f"--pkgversion={version}",
         f"--pkgrelease={release}",
