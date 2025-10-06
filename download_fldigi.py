@@ -5,6 +5,22 @@ import sys
 import tarfile
 import os
 
+
+software = {
+    "fldigi": "https://www.w1hkj.org/files/fldigi/",
+    "flrig": "https://www.w1hkj.org/files/flrig/",
+    "flmsg": "https://www.w1hkj.org/files/flmsg/",
+    "flamp": "https://www.w1hkj.org/files/flamp/",
+    "flwrap": "https://www.w1hkj.org/files/flwrap/",
+    "flnet": "https://www.w1hkj.org/files/flnet/",
+    "flarq": "https://www.w1hkj.org/files/flarq/",
+    "flcluster": "https://www.w1hkj.org/files/flcluster/",
+    "flxmlrpc": "https://www.w1hkj.org/files/flxmlrpc/",
+    "flrig-doc": "https://www.w1hkj.org/files/flrig-doc/",
+}
+
+
+
 logging.basicConfig(
     level=logging.INFO,  # Change to DEBUG for more detailed output
     format='%(asctime)s %(levelname)s %(message)s',
