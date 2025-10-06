@@ -1,6 +1,15 @@
 import requests
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # Change to DEBUG for more detailed output
+    format='%(asctime)s %(levelname)s %(message)s',
+)
+
+logging.info("Script started.")
 
 def get_latest_version_of_fldigi():
+    logging.info("Attempting to getting version of fldigi...")
     url = "https://sourceforge.net/projects/fldigi/files/fldigi/"
     response = requests.get(url)
     if response.status_code != 200:
