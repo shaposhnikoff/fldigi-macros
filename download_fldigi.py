@@ -172,6 +172,8 @@ if __name__ == "__main__":
         latest_version_flrig = get_latest_version_of_flrig()
         flrig_file = download_flrig(latest_version_flrig)
         flrig_dir = f"flrig-{latest_version_flrig}"
+        logging.info(flrig_file)
+        logging.info(flrig_dir)
         extract_archive(flrig_file, ".")
         os.chdir(fldigi_dir)
         configure_and_build(".")
