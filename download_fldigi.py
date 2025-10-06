@@ -29,8 +29,15 @@ def configure_and_build():
     logging.info("Configuring and building fldigi...")
     try:
         # Clean previous builds
-        subprocess.run(["make", "clean"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        logging.info("make clean successful.")
+        try:
+            subprocess.run(["make", "clean"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            logging.info("make clean successful.")
+        except subprocess.CalledProcessError as e:
+            if "No rule to make target 'clean'" in e.stderr or "No targets specified and no makefile found" in e.stderr:
+                logging.warning("make clean failed: No Makefile present yet. Continuing.")
+            else:
+                logging.error("make clean error:\n" + e.stderr)
+                sys.exit(1)
 
         # Configure
         configure_cmd = [
