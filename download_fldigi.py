@@ -137,41 +137,71 @@ def get_latest_version_of_flrig():
     logging.info(f"Latest flrig version: {versions[-1]}")
     return versions[-1]
 
-def download_fldigi(version):
-    base_url = "https://www.w1hkj.org/files/fldigi/"
-    file_name = f"fldigi-{version}.tar.gz"
-    download_url = f"{base_url}/{file_name}"
-    logging.info(f"Downloading fldigi from {download_url}")
+def download_program(program_name, version, base_url=None):
+    """Generic function to download a program from the software dictionary.
+    
+    Args:
+        program_name: Name of the program (e.g., 'fldigi', 'flrig')
+        version: Version string of the program
+        base_url: Optional base URL. If not provided, uses the software dict
+    
+    Returns:
+        str: Downloaded file name
+    """
+    if base_url is None:
+        if program_name not in software:
+            raise ValueError(f"Unknown program: {program_name}")
+        base_url = software[program_name]
+    
+    file_name = f"{program_name}-{version}.tar.gz"
+    download_url = f"{base_url}{file_name}"
+    logging.info(f"Downloading {program_name} from {download_url}")
     response = requests.get(download_url, stream=True)
     logging.info(f"Download response status code: {response.status_code}")
     if response.status_code != 200:
-        logging.error("Failed to download the fldigi file")
-        raise Exception("Failed to download the file")
+        logging.error(f"Failed to download the {program_name} file")
+        raise Exception(f"Failed to download the file")
     
     with open(file_name, 'wb') as file:
         for chunk in response.iter_content(chunk_size=8192):
             file.write(chunk)
     
-    logging.info(f"Downloaded fldigi file: {file_name}")
+    logging.info(f"Downloaded {program_name} file: {file_name}")
     return file_name
 
+def download_fldigi(version):
+    return download_program("fldigi", version)
+
 def download_flrig(version):
-    base_url = "https://www.w1hkj.org/files/flrig/"
-    file_name = f"flrig-{version}.tar.gz"
-    download_url = f"{base_url}/{file_name}"
-    logging.info(f"Downloading flrig from {download_url}")
-    response = requests.get(download_url, stream=True)
-    logging.info(f"Download response status code: {response.status_code}")
-    if response.status_code != 200:
-        logging.error("Failed to download the flrig file")
-        raise Exception("Failed to download the file")
+    return download_program("flrig", version)
+
+def download_all_programs(programs_dict, get_version_func=None):
+    """Iterate over the programs dictionary and download each program.
     
-    with open(file_name, 'wb') as file:
-        for chunk in response.iter_content(chunk_size=8192):
-            file.write(chunk)
+    Args:
+        programs_dict: Dictionary with program names as keys and URLs as values
+        get_version_func: Optional function to get version for a program.
+                         Should accept program_name as argument and return version string.
     
-    logging.info(f"Downloaded flrig file: {file_name}")
-    return file_name
+    Returns:
+        dict: Dictionary mapping program names to downloaded file names
+    """
+    downloaded_files = {}
+    for program_name, base_url in programs_dict.items():
+        try:
+            if get_version_func:
+                version = get_version_func(program_name)
+            else:
+                logging.warning(f"No version function provided for {program_name}, skipping")
+                continue
+            
+            file_name = download_program(program_name, version, base_url)
+            downloaded_files[program_name] = file_name
+            logging.info(f"Successfully downloaded {program_name}: {file_name}")
+        except Exception as e:
+            logging.error(f"Error downloading {program_name}: {e}", exc_info=True)
+    
+    return downloaded_files
 
 if __name__ == "__main__":
     install_build_dependencies()
