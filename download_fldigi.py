@@ -81,6 +81,28 @@ def configure_and_build(source_dir=".",appname="fldigi"):
         logging.error("Configure/build error:\n" + e.stderr)
         sys.exit(1)
 
+def install_with_make(source_dir=".", appname="fldigi"):
+    """Install the application using make install.
+    
+    Args:
+        source_dir: Directory containing the built application
+        appname: Name of the application
+    """
+    logging.info(f"Installing {appname} with make install in {source_dir}")
+    try:
+        result = subprocess.run(
+            ["sudo", "make", "install"], 
+            check=True, 
+            cwd=source_dir, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE, 
+            text=True
+        )
+        logging.info(f"Make install output:\n{result.stdout}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Make install failed: {e.stderr}")
+        raise
+
 def create_deb_package(source_dir=".", appname="fldigi", version="1.0.0", release="1", install=True):
     """Create a DEB package using checkinstall.
     
@@ -108,9 +130,17 @@ def create_deb_package(source_dir=".", appname="fldigi", version="1.0.0", releas
             logging.error(f"Failed to install checkinstall: {e}")
             raise
     
-    # Build checkinstall command
+    # Install first using make install (required for checkinstall to work)
+    try:
+        install_with_make(source_dir, appname)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Make install failed, trying alternative approach: {e}")
+        # Try creating package without prior installation
+        pass
+    
+    # Build checkinstall command with sudo
     checkinstall_cmd = [
-        "checkinstall",
+        "sudo", "checkinstall",
         f"--pkgname={appname}",
         f"--pkgversion={version}",
         f"--pkgrelease={release}",
@@ -119,7 +149,8 @@ def create_deb_package(source_dir=".", appname="fldigi", version="1.0.0", releas
         "--deldesc=yes",
         "--delspec=yes",
         "--default",
-        f"--install={'yes' if install else 'no'}"
+        f"--install={'yes' if install else 'no'}",
+        "make", "install"  # Explicitly specify the install command
     ]
     
     try:
@@ -152,7 +183,15 @@ def create_deb_package(source_dir=".", appname="fldigi", version="1.0.0", releas
             
     except subprocess.CalledProcessError as e:
         logging.error(f"Checkinstall failed: {e.stderr}")
-        raise
+        # Try alternative: just install normally and skip package creation
+        logging.info("Falling back to regular make install without package creation")
+        try:
+            install_with_make(source_dir, appname)
+            logging.info(f"{appname} installed successfully via make install")
+            return None
+        except subprocess.CalledProcessError as install_error:
+            logging.error(f"Both checkinstall and make install failed: {install_error}")
+            raise
 
 def extract_archive(filename, dest_dir):
     logging.info(f"Extracting {filename} to {dest_dir} ...")
@@ -313,17 +352,21 @@ if __name__ == "__main__":
             install_build_dependencies()
             configure_and_build(source_dir, program)
             
-            # Create DEB package after building
-            deb_file = create_deb_package(source_dir, program, version, "1", install=False)
-            if deb_file:
-                logging.info(f"DEB package created successfully: {deb_file}")
-            else:
-                logging.error(f"Failed to create DEB package for {program}")
+            # Create DEB package after building (or fall back to regular install)
+            try:
+                deb_file = create_deb_package(source_dir, program, version, "1", install=False)
+                if deb_file:
+                    logging.info(f"DEB package created successfully: {deb_file}")
+                else:
+                    logging.info(f"No DEB package created for {program}, but installation may have succeeded")
+            except Exception as pkg_error:
+                logging.error(f"Package creation failed for {program}: {pkg_error}")
+                # Continue with next program instead of stopping
+                continue
     
         except Exception as e:
             logging.error(f"Error processing {program}: {e}")
             continue
-    
     
     # install_build_dependencies()
     # try:
