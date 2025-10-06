@@ -5,6 +5,8 @@ import sys
 import tarfile
 import os
 
+# Set environment variable BUILD=true
+os.environ["BUILD"] = "true"
 
 software = {
     "fldigi": "https://www.w1hkj.org/files/fldigi/",
@@ -210,7 +212,11 @@ if __name__ == "__main__":
         fldigi_file = download_fldigi(latest_version)
         fldigi_dir = f"fldigi-{latest_version}"
         extract_archive(fldigi_file, ".")
-        configure_and_build(fldigi_dir)
+        # Only run build if BUILD env var is set to "true"
+        if os.environ.get("BUILD", "").lower() == "true":
+            configure_and_build(fldigi_dir)
+        else:
+            logging.info("Skipping build step because BUILD env var is not true.")
     except Exception as e:
         logging.error(f"Error with fldigi: {e}", exc_info=True)
 
@@ -222,7 +228,11 @@ if __name__ == "__main__":
         logging.info(flrig_dir)
         extract_archive(flrig_file, ".")
         os.chdir(flrig_dir)
-        # configure_and_build(".")
+        # Only run build if BUILD env var is set to "true"
+        # if os.environ.get("BUILD", "").lower() == "true":
+        #     configure_and_build(".")
+        # else:
+        #     logging.info("Skipping build step for flrig because BUILD env var is not true.")
     
         # configure_and_build(flrig_dir)  # Uncomment/configure if you want to build flrig
     except Exception as e:
