@@ -221,7 +221,7 @@ if __name__ == "__main__":
         logging.info(flrig_file)
         logging.info(flrig_dir)
         extract_archive(flrig_file, ".")
-        os.chdir(fldigi_dir)
+        os.chdir(flrig_dir)
         # configure_and_build(".")
     
         # configure_and_build(flrig_dir)  # Uncomment/configure if you want to build flrig
