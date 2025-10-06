@@ -1,5 +1,7 @@
 import requests
 import logging
+import subprocess
+import sys
 
 logging.basicConfig(
     level=logging.INFO,  # Change to DEBUG for more detailed output
@@ -7,6 +9,45 @@ logging.basicConfig(
 )
 
 logging.info("Script started.")
+
+def install_build_dependencies():
+    logging.info("Installing build dependencies via apt...")
+    packages = [
+        "build-essential", "libfltk1.3-dev", "libsamplerate0-dev", "portaudio19-dev",
+        "libsndfile1-dev", "libxft-dev", "libxinerama-dev", "libxcursor-dev",
+        "libpulse-dev", "pavucontrol", "libusb-1.0-0-dev", "libudev-dev"
+    ]
+    cmd = ["sudo", "apt", "-y", "install"] + packages
+    try:
+        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        logging.info("Dependency install output:\n" + result.stdout)
+    except subprocess.CalledProcessError as e:
+        logging.error("Error installing dependencies:\n" + e.stderr)
+        sys.exit(1)
+
+def configure_and_build():
+    logging.info("Configuring and building fldigi...")
+    try:
+        # Clean previous builds
+        subprocess.run(["make", "clean"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        logging.info("make clean successful.")
+
+        # Configure
+        configure_cmd = [
+            "./configure",
+            "--prefix=/opt/fldigi",
+            "--enable-optimizations=x86-64",
+            "--enable-debug"
+        ]
+        result = subprocess.run(configure_cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        logging.info("Configure output:\n" + result.stdout)
+
+        # Build
+        result = subprocess.run(["make", "-j4"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        logging.info("Build output:\n" + result.stdout)
+    except subprocess.CalledProcessError as e:
+        logging.error("Configure/build error:\n" + e.stderr)
+        sys.exit(1)
 
 def get_latest_version_of_fldigi():
     logging.info("Getting latest version of fldigi...")
@@ -37,7 +78,6 @@ def get_latest_version_of_fldigi():
     logging.info(f"Latest fldigi version: {versions[-1]}")
     return versions[-1]
 
-
 def get_latest_version_of_flrig():
     logging.info("Getting latest version of flrig...")
     url = "https://sourceforge.net/projects/fldigi/files/flrig/"
@@ -66,7 +106,6 @@ def get_latest_version_of_flrig():
     versions.sort(key=lambda s: list(map(int, s.split('.'))))
     logging.info(f"Latest flrig version: {versions[-1]}")
     return versions[-1]
-
 
 def download_fldigi(version):
     base_url = "https://www.w1hkj.org/files/fldigi/"
@@ -103,14 +142,17 @@ def download_flrig(version):
     logging.info(f"Downloaded flrig file: {file_name}")
 
 if __name__ == "__main__":
+    install_build_dependencies()
     try:
         latest_version = get_latest_version_of_fldigi()
         download_fldigi(latest_version)
+        configure_and_build()
     except Exception as e:
         logging.error(f"Error with fldigi: {e}", exc_info=True)
 
     try:
         latest_version_flrig = get_latest_version_of_flrig()
         download_flrig(latest_version_flrig)
+        # You can add another configure_and_build() if needed for flrig
     except Exception as e:
         logging.error(f"Error with flrig: {e}", exc_info=True)
