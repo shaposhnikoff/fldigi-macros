@@ -173,6 +173,9 @@ if __name__ == "__main__":
         flrig_file = download_flrig(latest_version_flrig)
         flrig_dir = f"flrig-{latest_version_flrig}"
         extract_archive(flrig_file, ".")
+        os.chdir(fldigi_dir)
+        configure_and_build(".")
+    
         # configure_and_build(flrig_dir)  # Uncomment/configure if you want to build flrig
     except Exception as e:
         logging.error(f"Error with flrig: {e}", exc_info=True)
