@@ -229,10 +229,10 @@ if __name__ == "__main__":
         extract_archive(flrig_file, ".")
         os.chdir(flrig_dir)
         # Only run build if BUILD env var is set to "true"
-        # if os.environ.get("BUILD", "").lower() == "true":
-        #     configure_and_build(".")
-        # else:
-        #     logging.info("Skipping build step for flrig because BUILD env var is not true.")
+        if os.environ.get("BUILD", "").lower() == "true":
+            configure_and_build(flrig_dir)
+        else:
+            logging.info("Skipping build step for flrig because BUILD env var is not true.")
     
         # configure_and_build(flrig_dir)  # Uncomment/configure if you want to build flrig
     except Exception as e:
