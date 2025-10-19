@@ -33,7 +33,7 @@ jobs:
 
     - uses: astral-sh/ruff-action@v3
       with:
-        src: "./src"
+        src: "."
 
     - name: Install dependencies
       run: |
